@@ -41,7 +41,7 @@ To work on this project, you'll need to install Docker and/or DevPod (optional).
 
 1. Install [Docker](https://docs.docker.com/get-docker/) and [DevPod](https://devpod.sh/) and open DevPod.
 
-2. In DevPod, go to `Workspaces`, click `+ Create`, in the `Git Repo` field, enter `https://github.com/yourgithubusername/f24-cs7300-hw2`, ensure `Docker` is selected in `Provider`, Name your workspace (e.g. `f24-cs7300-hw2`), and click the `Create Workspace` button. The project will open in your browser using the provided `.devcontainer` configuration.
+2. In DevPod, go to `Workspaces`, click `+ Create`, in the `Git Repo` field, enter `https://github.com/yourgithubusername/lr-three-langs`, ensure `Docker` is selected in `Provider`, Name your workspace (e.g. `lr-three-langs`), and click the `Create Workspace` button. The project will open in your browser using the provided `.devcontainer` configuration.
 
 ### **Note**: 
 
@@ -63,8 +63,8 @@ If VSCode hotkeys are not working in Chrome, viz. `Ctrl + Alt + C` then `Ctrl + 
 
    ```bash
    cd .\Documents\projects
-   git clone https://github.com/adabwana/f24-cs7300-hw2.git
-   cd f24-cs7300-hw2
+   git clone https://github.com/adabwana/lr-three-langs.git
+   cd lr-three-langs
    code .
    ```
 
