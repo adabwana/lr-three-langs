@@ -1,0 +1,13 @@
+.*
+!.devcontainer
+!.gitignore
+*.iml
+
+/classes
+/docs
+src/my_py_clj
+
+src/languages/python_example_answers.ipynb
+src/languages/xxxclojure.clj
+src/utils/calc_metric_patch.clj
+# src/utils/formatting.clj

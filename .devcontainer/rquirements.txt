@@ -1,0 +1,7 @@
+here
+readr
+ggplot2
+dplyr
+broom
+tidyr
+jsonlite

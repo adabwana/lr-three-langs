@@ -1,0 +1,172 @@
+```{r}
+library(here) # relative pathing
+library(readr) # read csv
+library(ggplot2) # plotting
+library(dplyr) # data manipulation
+# library(yardstick) # accuracy measures
+# library(DT) # data table
+# library(ggpmisc) # ggplot extensions
+
+# Set ggplot2 theme
+theme_set(theme_minimal())
+```
+
+```{r}
+# Load data
+path_root <- here::here()
+
+path_data <- paste0(path_root, "/data/autompg.csv")
+autompg <- readr::read_csv(path_data)
+
+head(autompg)
+summary(autompg)
+```
+
+```{r}
+# Plot data
+ggplot(autompg, aes(x = hp, y = mpg)) +
+  geom_point() +
+  labs(title = "MPG vs Horsepower",
+       x = "Horsepower", 
+       y = "Miles per Gallon")
+```
+
+```{r}
+# Simple linear regression model
+slr <- lm(mpg ~ hp, data = autompg)
+
+# Summary of model
+summary(slr)
+```
+
+```{r}
+# Confidence and prediction intervals visualization
+pred_int <- data.frame(predict(slr, interval = "predict", level = 0.95))
+conf_int <- data.frame(predict(slr, interval = "confidence", level = 0.95))
+
+ggplot(autompg, aes(x = hp, y = mpg)) +
+  geom_point() +
+  geom_smooth(method = "lm", color = "blue", se = TRUE) +
+  geom_ribbon(aes(ymin = pred_int$lwr,
+                  ymax = pred_int$upr),
+              fill = "lightgray", alpha = 0.4) +
+  labs(title = "MPG vs Horsepower with Confidence and Prediction Intervals",
+       x = "Horsepower", 
+       y = "Miles per Gallon")
+```
+
+```{r}
+# Predict the mpg of a car with hp=210
+x0 <- data.frame(hp = 210)
+predicted_mpg <- predict(slr, newdata = x0)
+
+ggplot(autompg, aes(x = hp, y = mpg)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE, color = "blue") +
+  geom_point(data = data.frame(hp = 210, mpg = predicted_mpg), 
+             aes(x = hp, y = mpg), color = "red", size = 3) +
+  labs(title = "MPG vs Horsepower with Predicted Point",
+       x = "Horsepower", 
+       y = "Miles per Gallon")
+```
+
+```{r}
+# Fit MLR models
+poly_2_lr <- lm(mpg ~ hp + I(hp^2), data = autompg)
+poly_5_lr <- lm(mpg ~ hp + I(hp^2) + I(hp^3) + I(hp^4) + I(hp^5), 
+               data = autompg)
+
+# Inference on model parameters
+summary(poly_2_lr)
+summary(poly_5_lr)
+```
+
+```{r}
+# Plot the models
+ggplot(autompg, aes(x = hp, y = mpg)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ x + I(x^2), color = "blue", se = TRUE) +
+  labs(title = "MPG vs Horsepower with Quadratic Fit",
+       x = "Horsepower", 
+       y = "Miles per Gallon")
+```
+
+```{r}
+# Create a data frame for predictions
+hp_range <- data.frame(hp = seq(min(autompg$hp), max(autompg$hp), length.out = 100))
+
+# Generate predictions for each model
+pred_slr <- predict(slr, newdata = hp_range)
+pred_poly_2 <- predict(poly_2_lr, newdata = hp_range)
+pred_poly_5 <- predict(poly_5_lr, newdata = hp_range)
+
+# Combine predictions into a single data frame
+plot_data <- data.frame(
+  hp = rep(hp_range$hp, 3),
+  mpg = c(pred_slr, pred_poly_2, pred_poly_5),
+  Model = rep(c("Linear", "Degree 2", "Degree 5"), each = 100)
+)
+
+# Plot the models
+ggplot(autompg, aes(x = hp, y = mpg)) +
+  geom_point(alpha = 0.5) +
+  geom_line(data = plot_data, aes(x = hp, y = mpg, color = Model), linetype = 1) +
+  scale_color_manual(values = c("Linear" = "blue", "Degree 2" = "red", "Degree 5" = "green")) +
+  labs(title = "MPG vs Horsepower with Different Polynomial Fits",
+       x = "Horsepower", 
+       y = "Miles per Gallon",
+       color = "Model") +
+  theme(legend.position = "bottom")
+```
+
+```{r}
+source(paste0(path_root, "/src/utils/linear_assumptions_plots.R"))
+```
+
+```{r}
+# 1. Check for linearity and independence
+check_linearity_independence(slr)
+
+# 2. Check for normality of random error
+check_normality_qq(slr)
+
+ggplot(NULL, aes(x = residuals(slr))) +
+  geom_histogram()
+
+# 3. Check for constant variance of random error
+check_homoscedasticity(slr)
+
+# 4. Check for independence of random error
+check_independence(slr, "hp")
+
+# Nice optional plots:
+# Check for observed vs predicted
+check_observed_vs_predicted(slr, "mpg")
+
+# Check for residuals vs leverage
+check_residuals_vs_leverage(slr)
+```
+
+```{r}
+# 1. Check for linearity and independence
+check_linearity_independence(poly_2_lr)
+
+# 2. Check for normality of random error
+check_normality_qq(poly_2_lr)
+
+ggplot(NULL, aes(x = residuals(poly_2_lr))) +
+  geom_histogram()
+
+# 3. Check for constant variance of random error
+check_homoscedasticity(poly_2_lr)
+
+# 4. Check for independence of random error
+check_independence(poly_2_lr, "hp")
+
+# Nice optional plots:
+# Check for observed vs predicted
+check_observed_vs_predicted(poly_2_lr, "mpg")
+
+# Check for residuals vs leverage
+check_residuals_vs_leverage(poly_2_lr)
+```
