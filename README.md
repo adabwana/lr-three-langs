@@ -41,7 +41,7 @@ To work on this project, you'll need to install Docker and/or DevPod (optional).
 
 1. Install [Docker](https://docs.docker.com/get-docker/) and [DevPod](https://devpod.sh/) and open DevPod.
 
-2. In DevPod, go to `Workspaces`, click `+ Create`, in the `Git Repo` field, enter `https://github.com/yourgithubusername/lr-three-langs`, ensure `Docker` is selected in `Provider`, Name your workspace (e.g. `lr-three-langs`), and click the `Create Workspace` button. The project will open in your browser using the provided `.devcontainer` configuration.
+2. In DevPod, go to `Workspaces`, click `+ Create`, in the `Git Repo` field, enter `https://github.com/adabwana/lr-three-langs`, ensure `Docker` is selected in `Provider`, Name your workspace (e.g. `lr-three-langs`), and click the `Create Workspace` button. The project will open in your browser using the provided `.devcontainer` configuration.
 
 ### **Note**: 
 
