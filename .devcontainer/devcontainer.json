@@ -45,7 +45,7 @@
     // "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached" // Commented out or remove this line
   ],
   "runArgs": [
-    "--gpus", "all",
+    // "--gpus", "all",
     "--net", "host",
     "-e", "DISPLAY=",
     "-e", "JAVA_TOOL_OPTIONS=-Djava.awt.headless=true"
