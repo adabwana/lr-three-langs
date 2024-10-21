@@ -85,8 +85,10 @@
 ;; 1. Check for independence of random error and linearity
 (defn check-linearity-independence
   [model]
-  (let [df (tc/dataset {:fitted (:fitted model)
-                        :residuals (get-in model [:residuals :raw])})]
+  (let [n (count (:fitted model))
+        df (tc/dataset {:fitted (:fitted model)
+                        :residuals (get-in model [:residuals :raw])
+                        :zeros (repeat n 0)})]
     (-> df
         (haclo/layer-point {:=x :fitted :=y :residuals
                             :=title "Check for Independence of Random Error and Linearity"
@@ -94,7 +96,7 @@
                             :=y-title "Residuals"})
         ;; (haclo/layer-smooth {:=x :fitted :=y :residuals
         ;;                      :=mark-color :gray :=stroke-dash [5 5]})
-        (haclo/layer-line {:=x :fitted :=y 0
+        (haclo/layer-line {:=x :fitted :=y :zeros
                            :=mark-color :red :=stroke-dash [5 5]}))))
 
 (defn inv-normal
@@ -169,10 +171,12 @@
 (defn check-independence
   [model data sort-var]
   (let [raw-residuals (get-in model [:residuals :raw])
-      df (-> (tc/dataset {:residuals raw-residuals
-                          :sort-var (sort-var data)})
+        n (count raw-residuals)
+        df (-> (tc/dataset {:residuals raw-residuals
+                            :sort-var (sort-var data)})
                (tc/order-by :sort-var :desc)
-               (tc/add-column :row-numbers (range (tc/row-count raw-residuals))))]
+               (tc/add-column :row-numbers (range (tc/row-count raw-residuals)))
+               (tc/add-column :zeros (repeat n 0)))]
     (-> df
         (haclo/layer-point {:=x :row-numbers :=y :residuals
                             :=title (str "Check for Independence \n Residuals sorted by " (name sort-var))
@@ -180,7 +184,7 @@
                             :=y-title "Residuals"})
         ;; (haclo/layer-smooth {:=x :row-numbers :=y :residuals
         ;;                      :=mark-color :gray :=stroke-dash [5 5]})
-        (haclo/layer-line {:=x :row-numbers :=y 0
+        (haclo/layer-line {:=x :row-numbers :=y :zeros
                            :=mark-color :red :=stroke-dash [5 5]}))))
 
 ;; Additional diagnostic plot: Observed vs Predicted
@@ -207,14 +211,14 @@
   ;; Residuals vs Leverage plot
   (defn check-residuals-vs-leverage
     [model]
-      (let [df (tc/dataset {:leverage (:leverage model)
-                            :std-resid (get-in model [:residuals :standardized])})]
-        (-> df
-            (haclo/layer-point {:=x :leverage :=y :std-resid
-                                :=title "Residuals vs Leverage"
-                                :=x-title "Leverage"
-                                :=y-title "Standardized Residuals"})
+    (let [df (tc/dataset {:leverage (:leverage model)
+                          :std-resid (get-in model [:residuals :standardized])})]
+      (-> df
+          (haclo/layer-point {:=x :leverage :=y :std-resid
+                              :=title "Residuals vs Leverage"
+                              :=x-title "Leverage"
+                              :=y-title "Standardized Residuals"})
             ;; (haclo/layer-smooth {:=x :leverage :=y :std-resid
             ;;                      :=mark-color :gray :=stroke-dash [5 5]})
-            (haclo/layer-line {:=x :leverage :=y 0
-                          :=mark-color :red :=stroke-dash [5 5]})))))
+          (haclo/layer-line {:=x :leverage :=y 0
+                             :=mark-color :red :=stroke-dash [5 5]})))))
