@@ -9,6 +9,7 @@ library(dplyr) # data manipulation
 
 # Set ggplot2 theme
 theme_set(theme_minimal())
+# options(vsc.dev.args = list(width = 800, height = 600))
 ```
 
 ```{r}
@@ -39,7 +40,7 @@ slr <- lm(mpg ~ hp, data = autompg)
 summary(slr)
 ```
 
-```{r}
+```{r, fig.width=10, fig.height=6, out.width="80%"}
 # Confidence and prediction intervals visualization
 pred_int <- data.frame(predict(slr, interval = "predict", level = 0.95))
 conf_int <- data.frame(predict(slr, interval = "confidence", level = 0.95))
@@ -86,6 +87,19 @@ summary(poly_5_lr)
 ggplot(autompg, aes(x = hp, y = mpg)) +
   geom_point() +
   geom_smooth(method = "lm", formula = y ~ x + I(x^2), color = "blue", se = TRUE) +
+  labs(title = "MPG vs Horsepower with Quadratic Fit",
+       x = "Horsepower", 
+       y = "Miles per Gallon")
+```
+
+```{r}
+# Plot the models
+ggplot(autompg, aes(x = hp, y = mpg)) +
+  geom_point() +
+  geom_smooth(method = "lm", formula = y ~ poly(x, 2),
+              color = "red", linetype = 2, fullrange = T) +
+  geom_smooth(method = "lm", se = F, formula = y ~ poly(x, 2), color = "blue") +
+  expand_limits(x = 300) +
   labs(title = "MPG vs Horsepower with Quadratic Fit",
        x = "Horsepower", 
        y = "Miles per Gallon")
